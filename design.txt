@@ -1,0 +1,13 @@
+
+*Engine
+*Output
+*Objects
+-a toast
+-a dialogue box
+-a notification in the notification shade
+-a menu item or a function
+-app name
+-action bar
+-other
+
+
