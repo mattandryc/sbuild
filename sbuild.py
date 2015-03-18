@@ -38,7 +38,9 @@ class Element(object):
 
 class DialogueBox(Element):
 
-    def __init__(self, body, positive, negative):
+    def __init__(self, name, comment, child, body, positive, negative):
+        self.name = name
+        self.comment = comment
         self.child = child
         self.body = body
         self.positive = positive
@@ -50,7 +52,7 @@ class DialogueBox(Element):
 
     def xml_writeto(self):
         strings.write('    ' + self.comment + '\n')
-        strings.write('    ' + self.child + '_title\">'  + self.child + '</strings>\n')
+        strings.write('    ' + self.name + '_title\">'  + self.child + '</strings>\n')
         strings.write('    ' + self.name + '_body\">'  + self.body + '</strings>\n')
         strings.write('    ' + self.name + '_positive\">'  + self.positive + '</strings>\n')
         strings.write('    ' + self.name + '_negative\">'  + self.negative + '</strings>\n')
@@ -141,7 +143,7 @@ def toast ():
 
 
 def dialogue ():
-    d_types = {'1':'_warning', '2':'_notify', '3':'_perms', '4':'_remind'}
+    d_types = {1:'warning', 2:'notify', 3:'perms', 4:'remind'}
     print '\n\n\n'
     print 'let\'s build a 对话框'
     print '简单地描述一下你的对话框在什么情况下出现'
@@ -157,7 +159,7 @@ def dialogue ():
             print '4. Reminder'
             unique2 = int(raw_input('> '))
             if unique2 in range(1, 4):
-                unique2 = str(d_types.get(unique2))
+                unique2 = d_types.get(unique2)
         except ValueError:
             print 'Input invalid. Try again.'
             continue
@@ -173,7 +175,7 @@ def dialogue ():
     positive = str(raw_input('> '))
     print '输入对话框否认按钮的文字'
     negative = str(raw_input('> '))
-    dialogue = DialogueBox(body, positive, negative)
+    dialogue = DialogueBox(string_name, comment, child, body, positive, negative)
     dialogue.xml_format()
     dialogue.xml_writeto()
     done()
@@ -181,13 +183,3 @@ def dialogue ():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
-
-
-
