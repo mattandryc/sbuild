@@ -55,7 +55,7 @@ class DialogueBox(Element):
         strings.write('    ' + self.name + '_title\">'  + self.child + '</strings>\n')
         strings.write('    ' + self.name + '_body\">'  + self.body + '</strings>\n')
         strings.write('    ' + self.name + '_positive\">'  + self.positive + '</strings>\n')
-        strings.write('    ' + self.name + '_negative\">'  + self.negative + '</strings>\n')
+        strings.write('    ' + self.name + '_negative\">'  + self.negative + '</strings>\n\n')
 
 #Functions below this line
 
