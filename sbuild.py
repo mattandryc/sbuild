@@ -1,63 +1,54 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from sys import exit
+import os
 
-'''
-*Engine
-*Output
-*Objects
--a toast
--a dialogue box
--a notification in the notification shade
--a menu item or a function
--app name
--action bar
--other
-'''
-#Set strings.xml
-strings = open('strings.xml', 'w')
-strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
-strings.write('<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">\n')
+menu_items = {'1':'toast', '2':'对话框', '3':'通知烂的通知', '4':'menu item','5':'Home screen app name'}
 
-#Elements below this line
+#Create strings.xml
+if not os.path.isfile('strings.xml'):
+    strings = open('strings.xml', 'w')
+    strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
+    strings.write('<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">\n\n')
+else:
+    strings = open('strings.xml', 'a')
 
-class Element(object):
 
-    def __init__(self, name, comment, child):
-        self.name = name
-        self.comment = comment
-        self.child = child
+#Functions
+def write_xml(comment, string_name, child, tail):
+    suffix =  {'1':'_title', '2':'_summary', '3':'_positive', '4':'_negative'}
+    char_limit = {}
+    if tail in range(1, 5):
+        string_name += str(suffix.get(str(tail)))
+    strings.write('    ' + '<!-- ' + comment + ' -->\n')
+    strings.write('    ' + '<string name =\"' + string_name + '\">' + child + '</string>\n\n')
 
-    def xml_format(self):
-        self.comment = '<!-- ' + self.comment + ' -->'
-        self.name = '<string name=\"' + self.name + '\">'
 
-    def xml_writeto(self):
-        strings.write('    ' + self.comment + '\n')
-        strings.write('    ' + self.name + self.child + '</strings>\n\n')
+def namify(string):
+    if string[len(string) - 1] == ' ':
+        string = string[:len(string) - 1]
+        string = namify(string)
+    else:
+        string = string.replace(" ","_")
+        return string.lower()
 
-class DialogueBox(Element):
 
-    def __init__(self, name, comment, child, body, positive, negative):
-        self.name = name
-        self.comment = comment
-        self.child = child
-        self.body = body
-        self.positive = positive
-        self.negative = negative
+def menu():
+    print '\n\nWhat are you building?'
+    for key in iter(sorted(menu_items.iteritems())):
+        print key[0] + '. ' + key[1]
+    while True:
+        try:
+            choice = int(raw_input('> '))
+        except ValueError:
+            print 'Input invalid. Try again.'
+            continue
+        if choice in range(1, 7):
+            builder(menu_items.get(str(choice)))
+            break
+        else:
+            print 'Input invalid. Try again.'
 
-    def xml_format(self):
-        self.comment = '<!-- ' + self.comment + ' -->'
-        self.name = '<string name=\"' + self.name
-
-    def xml_writeto(self):
-        strings.write('    ' + self.comment + '\n')
-        strings.write('    ' + self.name + '_title\">'  + self.child + '</strings>\n')
-        strings.write('    ' + self.name + '_body\">'  + self.body + '</strings>\n')
-        strings.write('    ' + self.name + '_positive\">'  + self.positive + '</strings>\n')
-        strings.write('    ' + self.name + '_negative\">'  + self.negative + '</strings>\n\n')
-
-#Functions below this line
 
 def done():
     print '还有其它业务么？ （y/N）'
@@ -68,7 +59,7 @@ def done():
             print 'Input invalid. Try again.'
             continue
         if dchoice.lower() ==  'y':
-            main()
+            menu()
         elif dchoice.lower() ==  'n':
             strings.write('</resources>')
             strings.close()
@@ -77,109 +68,86 @@ def done():
         else:
             print 'Input invalid. Try again.'
 
-def namify(string_name):
-    if string_name[len(string_name) - 1] == ' ':
-        string_name = string_name[:len(string_name) - 1]
-        string_name = namify(string_name)
-    else:
-        string_name = string_name.replace(" ","_")
-        return string_name.lower()
 
-choice = 0
+def builder(choice):
 
-def main_menu():
-    print 'What are you building?'
-    print '1. Toast'
-    print '2. 对话框'
-    print '3. Notification' 
-    print '4. Menu item'
-    print '5. Action bar' 
-    print '6. Other' 
-    while True:
-        try:
-            choice = int(raw_input('> '))
-        except ValueError:
-            print 'Input invalid. Try again.'
-            continue
-        if choice in range(1, 7):
-            return choice
-            break
-        else:
-            print 'Input invalid. Try again.'
-
-def main():
-    choice = main_menu()
-    if choice == 1:
-        toast()
-    if choice == 2:
-        dialogue()
-
-
-def toast ():
-    print '\n\n\n'
-    print 'let\'s build a toast'
-    print '简单地描述一下你的toast什么时候出现'
-    comment = raw_input('> ')
-    while True:
-        try:
-            print 'Enter object for toast'
-            unique1 = str(raw_input('> '))
-            print 'Enter status for toast'
-            unique2 = str(raw_input('> '))
-        except ValueError:
-            print 'Input invalid. Try again.'
-            continue
-        else:
-            unique1 = namify(unique1)
-            unique2 = namify(unique2)
-            break
-    string_name = unique1 + '_' + unique2 + '_toast'
-    print '输入toast显示内容'
-    child = str(raw_input('> '))
-    toast_xml = Element(string_name, comment, child)
-    toast_xml.xml_format()
-    toast_xml.xml_writeto()
-    done()
-
-
-def dialogue ():
     d_types = {1:'warning', 2:'notify', 3:'perms', 4:'remind'}
-    print '\n\n\n'
-    print 'let\'s build a 对话框'
-    print '简单地描述一下你的对话框在什么情况下出现'
-    comment = raw_input('> ')
-    while True:
-        try:
-            print 'Enter unique keyword for dialogue box'
-            unique1 = str(raw_input('> '))
-            print 'Choose type for dialogue box'
-            print '1. Warning'
-            print '2. Notification'
-            print '3. Permissions' 
-            print '4. Reminder'
-            unique2 = int(raw_input('> '))
-            if unique2 in range(1, 4):
-                unique2 = d_types.get(unique2)
-        except ValueError:
-            print 'Input invalid. Try again.'
-            continue
-        else:
-            unique1 = namify(unique1)
-            break
-    string_name = unique1 + '_' + unique2 + '_dialogue'
-    print '输入对话框显示的标题'
-    child = str(raw_input('> '))
-    print '输入对话框显示的内容'
-    body = str(raw_input('> '))
-    print '输入对话框确认按钮的文字'
-    positive = str(raw_input('> '))
-    print '输入对话框否认按钮的文字'
-    negative = str(raw_input('> '))
-    dialogue = DialogueBox(string_name, comment, child, body, positive, negative)
-    dialogue.xml_format()
-    dialogue.xml_writeto()
-    done()
 
+    print '\n\n'
+    print 'OK, let\'s build a %s！ \n\n简单地描述一下你的%s在什么情况下出现：' % (choice, choice)
+    comment = raw_input('> ')
+    print 'Enter unique keyword for your %s:' % choice
+    unique1 = str(namify(raw_input('> ')))
+
+    if choice == '对话框':
+        while True:
+            try:
+                print 'Choose type for dialogue box'
+                print '1. Warning'
+                print '2. Notification'
+                print '3. Permissions' 
+                print '4. Reminder'
+                unique2 = int(raw_input('> '))
+                if unique2 in range(1, 4):
+                    unique2 = d_types.get(unique2)
+                    break
+            except ValueError:
+                print 'Input invalid. Try again.'
+                continue
+
+    else:
+        print 'Enter unique status for your %s:' % choice
+        unique2 = str(namify(raw_input('> ')))
+    string_name = unique1 + '_' + unique2
+
+    if choice == 'toast':
+        string_name += '_toast'
+        print '输入toast显示内容：'
+        child = str(raw_input('> '))
+        write_xml(comment, string_name, child, 0)
+        done()
+
+    if choice == '对话框':
+        string_name += '_dialogue'
+        print '输入对话框显示的标题：'
+        child = str(raw_input('> '))
+        write_xml(comment, string_name, child, 1)
+        print '输入对话框显示的内容：'
+        summary = str(raw_input('> '))
+        write_xml(comment, string_name, summary, 2)
+        print '输入对话框确认按钮的文字：'
+        positive = str(raw_input('> '))
+        write_xml(comment, string_name, positive, 3)
+        print '输入对话框否认按钮的文字：'
+        negative = str(raw_input('> '))
+        write_xml(comment, string_name, negative, 4)
+        done()
+
+    if choice == '通知烂的通知':
+        string_name += '_notification'
+        print '输入通知烂的通知显示的标题：'
+        child = str(raw_input('> '))
+        write_xml(comment, string_name, child, 1)
+        print '输入通知烂的通知显示的标题：'
+        summary = str(raw_input('> '))
+        write_xml(comment, string_name, summary, 2)
+        done()
+
+    if choice == 'menu item':
+        string_name += '_menu'
+        print '输入通知烂的通知显示的标题：'
+        child = str(raw_input('> '))
+        write_xml(comment, string_name, child, 1)
+        print '输入通知烂的通知显示的标题：'
+        summary = str(raw_input('> '))
+        write_xml(comment, string_name, summary, 2)
+        done()
+
+    if choice == 'Home screen app name':
+        string_name += '_app_name'
+        print '输入Home screen app name显示的标题：'
+        child = str(raw_input('> '))
+        done()
 
 if __name__ == "__main__":
-    main()
+    menu()
