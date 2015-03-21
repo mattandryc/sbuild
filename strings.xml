@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!--When connects to Google servers-->
-    <string name="server_connected_toast">Connected to googles servers</string>
 
+    <!-- asdf -->
+    <string name ="asdf_asdf_toast">adfs</string>
+
+    <!-- asd -->
+    <string name ="asdf_warning_dialogue_title">adsf</string>
+
+    <!-- asd -->
+    <string name ="asdf_warning_dialogue_summary">adf</string>
+
+    <!-- asd -->
+    <string name ="asdf_warning_dialogue_positive">adf</string>
+
+    <!-- asd -->
+    <string name ="asdf_warning_dialogue_negative">adf</string>
+
+    <!-- asdf -->
+    <string name ="asdf_thisi_toast">this is the new</string>
+
+</resources>

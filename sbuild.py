@@ -1,18 +1,23 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-from sys import exit
+from sys import exit, argv
 import os
 
 menu_items = {'1':'toast', '2':'对话框', '3':'通知烂的通知', '4':'menu item','5':'Home screen app name'}
 
 #Create strings.xml
-if not os.path.isfile('strings.xml'):
+if not os.path.isfile(argv[1]):
     strings = open('strings.xml', 'w')
     strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
     strings.write('<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">\n\n')
 else:
-    strings = open('strings.xml', 'a')
-
+	strings = open(argv[1],"r")
+	lines = strings.readlines()
+	strings.close()
+	strings = open("strings.xml","w")
+	for line in lines:
+  		if line!="</resources>":
+			strings.write(line)
 
 #Functions
 def write_xml(comment, string_name, child, tail):
@@ -31,6 +36,8 @@ def namify(string):
     else:
         string = string.replace(" ","_")
         return string.lower()
+
+def ask(): 
 
 
 def menu():
@@ -51,7 +58,7 @@ def menu():
 
 
 def done():
-    print '还有其它业务么？ （y/N）'
+    print '还有其它业务么？[y/N]'
     while True:
         try:
             dchoice = str(raw_input('> '))
@@ -151,3 +158,4 @@ def builder(choice):
 
 if __name__ == "__main__":
     menu()
+	
