@@ -3,9 +3,9 @@
 from sys import exit, argv
 import os
 
-menu_items = {'1':'toast', '2':'对话框', '3':'通知烂的通知', '4':'menu item','5':'Home screen app name'}
+menu_items = {'1':('toast', '_toast'), '2':('对话框', '_dialogue'), '3':('通知烂的通知', '_notification'), '4':('menu item', '_menu'),'5':('Home screen app name', '_appname')}
 
-#Create strings.xml
+#Create or append strings
 if not os.path.isfile(argv[1]):
     strings = open('strings.xml', 'w')
     strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
@@ -20,11 +20,7 @@ else:
 			strings.write(line)
 
 #Functions
-def write_xml(comment, string_name, child, tail):
-    suffix =  {'1':'_title', '2':'_summary', '3':'_positive', '4':'_negative'}
-    char_limit = {}
-    if tail in range(1, 5):
-        string_name += str(suffix.get(str(tail)))
+def write_xml(comment, string_name, child):
     strings.write('    ' + '<!-- ' + comment + ' -->\n')
     strings.write('    ' + '<string name =\"' + string_name + '\">' + child + '</string>\n\n')
 
@@ -37,13 +33,21 @@ def namify(string):
         string = string.replace(" ","_")
         return string.lower()
 
-def ask(): 
+def ask(element, string_type, string_name, comment):
+	string_types = {'1':('标题', '_title'), '2':('标题下面的内容', '_summary'), '3':('_positive', '对话框确认按钮的文字'), '4':('对话框否认按钮的文字',  '_negative'),'5':('桌面应用显示名', '_app_title'), '6':'内容'}
+	
+	print '输入你的%s显示的%s' % (element, string_types.get(string_type[0]))
+	child = raw_input('> ')
+	string_name += str(string_types.get(string_type[1][1]))
+	print string_name
+	if string_type != 'plural':
+		write_xml(comment, string_name, child)
 
 
 def menu():
     print '\n\nWhat are you building?'
     for key in iter(sorted(menu_items.iteritems())):
-        print key[0] + '. ' + key[1]
+        print key[0] + '. ' + key[1][0]
     while True:
         try:
             choice = int(raw_input('> '))
@@ -58,7 +62,7 @@ def menu():
 
 
 def done():
-    print '还有其它业务么？[y/N]'
+    print '还有其它业务么？[yN]'
     while True:
         try:
             dchoice = str(raw_input('> '))
@@ -77,15 +81,12 @@ def done():
 
 
 def builder(choice):
-
     d_types = {1:'warning', 2:'notify', 3:'perms', 4:'remind'}
-
     print '\n\n'
-    print 'OK, let\'s build a %s！ \n\n简单地描述一下你的%s在什么情况下出现：' % (choice, choice)
+    print 'OK, let\'s build a %s！ \n\n简单地描述一下你的%s在什么情况下出现：' % (choice[0], choice[0])
     comment = raw_input('> ')
-    print 'Enter unique keyword for your %s:' % choice
+    print 'Enter unique keyword for your %s:' % choice[0]
     unique1 = str(namify(raw_input('> ')))
-
     if choice == '对话框':
         while True:
             try:
@@ -101,20 +102,14 @@ def builder(choice):
             except ValueError:
                 print 'Input invalid. Try again.'
                 continue
-
     else:
-        print 'Enter unique status for your %s:' % choice
+        print 'Enter unique status for your %s:' % choice[0]
         unique2 = str(namify(raw_input('> ')))
-    string_name = unique1 + '_' + unique2
-
+    string_name = unique1 + '_' + unique2 + choice[1]
     if choice == 'toast':
-        string_name += '_toast'
-        print '输入toast显示内容：'
-        child = str(raw_input('> '))
-        write_xml(comment, string_name, child, 0)
-        done()
+        ask('toast', 6, string_name, comment)
 
-    if choice == '对话框':
+	if choice == '对话框':
         string_name += '_dialogue'
         print '输入对话框显示的标题：'
         child = str(raw_input('> '))
