@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- asdf -->
-    <string name ="asdf_asdf_toast">adfs</string>
+    <!-- lsakjdf -->
+    <plurals name ="sadkjf_warning_dialogue_title">
+        <item quantity ="other">%d</item>
+    </plurals>
 
-    <!-- asd -->
-    <string name ="asdf_warning_dialogue_title">adsf</string>
+    <!-- lsakjdf -->
+    <string name ="sadkjf_warning_dialogue_summary">kljasd</string>
 
-    <!-- asd -->
-    <string name ="asdf_warning_dialogue_summary">adf</string>
+    <!-- lsakjdf -->
+    <string name ="sadkjf_warning_dialogue_positive">lkjfsa</string>
 
-    <!-- asd -->
-    <string name ="asdf_warning_dialogue_positive">adf</string>
+    <!-- lsakjdf -->
+    <string name ="sadkjf_warning_dialogue_negative">dlkjco</string>
 
-    <!-- asd -->
-    <string name ="asdf_warning_dialogue_negative">adf</string>
-
-    <!-- asdf -->
-    <string name ="asdf_thisi_toast">this is the new</string>
-
-    <!-- asdf -->
-    <string name ="asdf_asdf_toastNone">asdf</string>
-
-    <!-- 1 -->
-    <string name ="asdf_asdf_toastNone">asdf</string>
-
-    <!-- asdf -->
-    <string name ="asdf_asd_toast">asdf</string>
-
+</resources>
