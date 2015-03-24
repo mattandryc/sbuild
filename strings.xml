@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-    <!-- lsakjdf -->
-    <plurals name ="sadkjf_warning_dialogue_title">
-        <item quantity ="other">%d</item>
-    </plurals>
+    <!-- Toast message for asdjkh -->
+    <string name ="lksji_sadf_toast">"lkjasdicsa"</string>
 
-    <!-- lsakjdf -->
-    <string name ="sadkjf_warning_dialogue_summary">kljasd</string>
+    <!-- Title text for lkasdijc -->
+    <string name ="lwkjica_warning_dialogue_title">"kiailjsdc"</string>
 
-    <!-- lsakjdf -->
-    <string name ="sadkjf_warning_dialogue_positive">lkjfsa</string>
+    <!-- Summary text for lkasdijc -->
+    <string name ="lwkjica_warning_dialogue_summary">"lkjai"</string>
 
-    <!-- lsakjdf -->
-    <string name ="sadkjf_warning_dialogue_negative">dlkjco</string>
+    <!-- Positive button text for dialogue lkasdijc -->
+    <string name ="lwkjica_warning_dialogue_positive">"<xliff:g id="kajlidc" example="liiaid">%s</xliff:g>"</string>
+
+    <!-- Negative button text for dialogue lkasdijc -->
+    <string name ="lwkjica_warning_dialogue_negative">"ciaijd"</string>
 
 </resources>

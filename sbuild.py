@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import os, sys
+import os, sys, string
 
 def usage():
-    print 'Usage:'
+    print '\n\nUsage:'
     print '$python sbuild.py path/to/strings.xml'
-    print 'or to create a new strings.xml file, $python sbuild.py target/path/'
+    print '或如果想床在新的strings.xml文件的话就用$python sbuild.py target/path/'
 
-
-menu_items = {'1':('对话框', '_dialogue'), '2':('toast', '_toast'), '3':('通知烂的通知', '_notification'), '4':('listview功能或选项', '_menu'),'5':('桌面应用图标的标题', '_appname')}
+menu_items = {'1':('对话框', '_dialogue'), '2':('toast', '_toast'), '3':('通知烂的通知', '_notification'), '4':('listview功能或选项', '_menu'),'5':('桌面应用图标的标题', '_appname')
+}
 
 #Create or append strings
 def create_xml(path_to_strings):
@@ -36,6 +36,26 @@ def write_xml(comment, string_name, child, plural):
         strings.write('        ' + '<item quantity =\"other\">' + child + '</item>\n')
         strings.write('    ' + '</plurals>\n\n')
 
+def var_check(string):
+    if '%s' in string:
+        string = string.replace('%s', var_ask(str('%s')))
+        return string
+    if '%1$s' in string:
+        string = string.replace('%1$s', var_ask(str('%1$s')))
+    if '%2$s' in string:
+        string = string.replace('%2$s', var_ask(str('%2$s')))
+    if '%3$s' in string:
+        string = string.replace('%3$s', var_ask(str('%3$s')))
+    return string
+
+def var_ask(var_type):
+    print '%s参数代表什么？（一个词描述）：' % (var_type)
+    xliff_id = raw_input('> ')
+    print '输入一下%s显示例子？：'
+    xliff_example = raw_input('> ')
+    xliff_format = '<xliff:g id=\"' + xliff_id +'\" ' + 'example=\"' + xliff_example + '\">' + var_type + '</xliff:g>'
+    return xliff_format
+
 def namify(string):
     if string[len(string) - 1] == ' ':
         string = string[:len(string) - 1]
@@ -44,17 +64,29 @@ def namify(string):
         string = string.replace(" ","_")
         return string.lower()
 
+def name_check(string_name):
+    print string_name
+    for letter in string_name:
+        print letter
+        if letter not in string.lowercase and letter != '_':
+            return False
+        else:
+            return True
+
 def ask(choice, string_name, comment, string_type):
-    string_types = {'1':('标题', '_title'), '2':('标题下面的内容', '_summary'), '3':( '对话框确认按钮的文字', '_positive'), '4':('对话框否认按钮的文字', '_negative',), '5':('桌面应用显示名', '_app_title'), '6':('内容', '')}
+
+    string_types = {'1':('标题', '_title', 'Title text for '), '2':('标题下面的内容', '_summary', 'Summary text for '), '3':( '对话框确认按钮的文字', '_positive', 'Positive button text for dialogue '), '4':('对话框否认按钮的文字', '_negative', 'Negative button text for dialogue '), '5':('桌面应用显示名', '_app_title', 'App title displayed on Home screen for '), '6':('内容', '', 'Toast message for ')
+}
+
     print '输入你的%s显示的%s' % (choice, string_types.get(str(string_type))[0])
     child = raw_input('> ')
     string_name += str(string_types.get(str(string_type))[1])
+    comment = str(string_types.get(str(string_type))[2]) + comment
     if '%d' in child:
         plural = True
     else:
         plural = False
-    print string_name
-    write_xml(comment, string_name, child, plural)
+    write_xml(comment, string_name, var_check(str(child)), plural)
 
 def menu():
     print '\n\nWhat are you building?'
@@ -91,12 +123,18 @@ def done():
             print 'Input invalid. Try again.'
 
 def builder(choice):
-    dialogue_types = {'1':('警告', '_warning'), '2':('提示', '_notify'), '3':('更改权限', '_perms'), '4':('时定提示', '_remind')}
-    print '\n\n'
+    dialogue_types = {'1':('警告', '_warning'), '2':('提示', '_notify'), '3':('更改权限', '_perms'), '4':('时定提示', '_remind')
+}
     print 'OK, let\'s build a %s！ \n\n简单地描述一下你的%s在什么情况下出现：' % (choice[0], choice[0])
     comment = raw_input('> ')
-    print 'Enter unique keyword for your %s:' % choice[0]
-    unique1 = str(namify(raw_input('> ')))
+    print '\n\n'
+    while True:
+        print '给你的%s配一个关键词（例如：\'email\'）:' % choice[0]
+        unique1 = str(namify(raw_input('> ')))
+        if name_check(unique1) is False:
+            print 'string name限制用非英文字母. Try again.'
+        else:
+            break
 
     #Dialogue builder
     if choice[0] == '对话框':
@@ -119,8 +157,13 @@ def builder(choice):
 
     #Everything else builder
     else:
-        print 'Enter unique status for your %s:' % choice[0]
-        unique2 = str(namify(raw_input('> ')))
+        while True:
+            print '给你的%s配一个状态（例如：\'sent\'）:' % choice[0]
+            unique2 = str(namify(raw_input('> ')))
+            if name_check(unique1) is False:
+                print 'string name限制用非英文字母. Try again.'
+            else:
+                break
         string_name = unique1 + '_' + unique2 + choice[1]
         if choice[0] == 'toast':
             ask(choice[0], string_name, comment, 6)
@@ -143,11 +186,13 @@ def builder(choice):
             done()
 
 def main():
-    if len(sys.argv) < 1:
-        usage()
-    else:
-        create_xml(sys.argv[1])
-        menu()
+    while True:
+        try:
+            create_xml(sys.argv[1])
+            menu()
+        except IndexError:
+            usage()
+            exit(-1)
 
 if __name__ == "__main__":
     main()
