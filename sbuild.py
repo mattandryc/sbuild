@@ -2,23 +2,33 @@
 # -*- coding: utf-8 -*-
 import os, sys, string
 
+class bcolors:
+    NOTE = '\033[91m'
+    ENDC = '\033[0m'
+
+
 def usage():
     print '\n\nUsage:'
-    print '$python sbuild.py path/to/strings.xml'
-    print '或如果想床在新的strings.xml文件的话就用$python sbuild.py target/path/'
+    print '$python sbuild.py path/to/values/strings.xml'
+    print '或如果想建新的strings.xml文件的话就用$python sbuild.py target/path/to/values/'
+    print bcolors.NOTE +'注意：你所输入的内容也会被自动地拷贝到target/path/to/values-zh-rCN/strings.xml' + bcolors.ENDC
 
 menu_items = {'1':('对话框', '_dialogue'), '2':('toast', '_toast'), '3':('通知烂的通知', '_notification'), '4':('listview功能或选项', '_menu'),'5':('桌面应用图标的标题', '_appname')
 }
 
-#Create or append strings
-def create_xml(path_to_strings):
+
+#Create or append strings in values
+def create_xml(raw_path):
+    global dir_path, f
+    dir_path, f = os.path.split(raw_path)
+    os.chdir(dir_path)
     global strings
-    if not os.path.isfile(path_to_strings):
+    if not os.path.isfile(raw_path):
         strings = open('strings.xml', 'w')
         strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
         strings.write('<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">\n\n')
     else:
-        strings = open(path_to_strings,"r")
+        strings = open(raw_path,"r")
         lines = strings.readlines()
         strings.close()
         strings = open("strings.xml","w")
@@ -26,15 +36,47 @@ def create_xml(path_to_strings):
             if line!="</resources>" and line!="</resources>\n":
                 strings.write(line)
 
+#Create or append strings in values-zh-rCN
+def create_zh_xml(raw_path):
+    global zh_dir_path 
+    zh_dir_path = str(dir_path).replace('values', 'values-zh-rCN')
+    print zh_dir_path
+    print os.path.join(zh_dir_path, f)
+    os.chdir(zh_dir_path)
+    global zh_strings
+    if not os.path.isfile(os.path.join(zh_dir_path, f)):
+        zh_strings = open('strings.xml', 'w')
+        zh_strings.write('<?xml version="1.0" encoding="utf-8"?>\n')
+        zh_strings.write('<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">\n\n')
+    else:
+        zh_strings = open(os.path.join(zh_dir_path, f),"r")
+        lines = zh_strings.readlines()
+        zh_strings.close()
+        zh_strings = open("strings.xml","w")
+        for line in lines:
+            if line!="</resources>" and line!="</resources>\n":
+                zh_strings.write(line)
+
 #Functions
 def write_xml(comment, string_name, child, plural):
     strings.write('    ' + '<!-- ' + comment + ' -->\n')
     if plural != True:
+        os.chdir(dir_path)
         strings.write('    ' + '<string name =\"' + string_name + '\">\"' + child + '\"</string>\n\n')
+
+        os.chdir(zh_dir_path)
+        zh_strings.write('    ' + '<string name =\"' + string_name + '\">\"' + child + '\"</string>\n\n')
+
     else:
+        os.chdir(dir_path)
         strings.write('    ' + '<plurals name =\"' + string_name + '\">\n')
         strings.write('        ' + '<item quantity =\"other\">' + child + '</item>\n')
         strings.write('    ' + '</plurals>\n\n')
+
+        os.chdir(zh_dir_path)
+        zh_strings.write('    ' + '<plurals name =\"' + string_name + '\">\n')
+        zh_strings.write('        ' + '<item quantity =\"other\">' + child + '</item>\n')
+        zh_strings.write('    ' + '</plurals>\n\n')
 
 def var_check(string):
     if '%s' in string:
@@ -65,9 +107,7 @@ def namify(string):
         return string.lower()
 
 def name_check(string_name):
-    print string_name
     for letter in string_name:
-        print letter
         if letter not in string.lowercase and letter != '_':
             return False
         else:
@@ -96,7 +136,7 @@ def menu():
         try:
             choice = int(raw_input('> '))
         except ValueError:
-            print 'Input invalid. Try again.'
+            print bcolors.FAIL + 'Input invalid. Try again.'
             continue
         if choice in range(1, 7):
             builder(menu_items.get(str(choice)))
@@ -115,8 +155,12 @@ def done():
         if dchoice.lower() ==  'y':
             menu()
         elif dchoice.lower() ==  'n':
+            os.chdir(dir_path)
             strings.write('</resources>')
             strings.close()
+            os.chdir(zh_dir_path)
+            zh_strings.write('</resources>')
+            zh_strings.close()
             print '下次光临'
             exit(1)
         else:
@@ -189,6 +233,7 @@ def main():
     while True:
         try:
             create_xml(sys.argv[1])
+            create_zh_xml(sys.argv[1])
             menu()
         except IndexError:
             usage()
